@@ -1,0 +1,89 @@
+
+<html>
+
+    <head>
+
+        <script language="JavaScript" type="text/javascript" src="lib/jsbn.js"></script>
+        <script language="JavaScript" type="text/javascript" src="lib/random.js"></script>
+        <script language="JavaScript" type="text/javascript" src="lib/hash.js"></script>
+        <script language="JavaScript" type="text/javascript" src="lib/rsa.js"></script>
+        <script language="JavaScript" type="text/javascript" src="lib/aes.js"></script>
+        <script language="JavaScript" type="text/javascript" src="lib/api.js"></script>
+
+        <script>
+
+        function print(string)
+        {
+            document.write(string + "\n\n");
+        }
+
+        function generateKeyPair(){
+            var keyPair ={};
+            var PassPhrase = "Paypal hackathon.";
+            var Bits = 1024; 
+            keyPair.privateKey = cryptico.generateRSAKey(PassPhrase, Bits);
+            keyPair.publicKey = cryptico.publicKeyString(keyPair.privateKey);       
+            return keyPair;
+        }
+
+        function encrypt(message, publicKey){
+            return cryptico.encrypt(message, publicKey).cipher;
+        }
+
+        function decrypt(encryptedMessage, privateKey){
+            return cryptico.decrypt(encryptedMessage, privateKey).plaintext;
+        }
+
+
+        //This is how you use the code!!
+            
+        keyPair = generateKeyPair();
+        console.log(keyPair)
+        var message="hello"
+        encryptedMessage = encrypt(message, keyPair.publicKey)
+        decryptedMessage = decrypt(encryptedMessage, keyPair.privateKey)
+        console.log(encryptedMessage+":"+decryptedMessage)
+
+
+        </script>
+
+    </head>
+    
+    <body style="font-family: monospace; white-space:pre;">
+
+    </body>
+    
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
