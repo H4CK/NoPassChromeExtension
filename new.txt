@@ -1,0 +1,10 @@
+function popup(); 
+{
+   window.location.href="new.html";
+}
+</script>
+<script type="text/javascript">
+function popup2(); 
+{
+    chrome.browserAction.setPopup({popup: "new.html"});
+}
