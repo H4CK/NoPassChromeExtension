@@ -6,7 +6,11 @@
   "version": "1.0",
 
   "permissions": [
-    "tabs"
+    "tabs",  "https://ec2-54-213-119-125.us-west-2.compute.amazonaws.com:8080/", "http://*/"
+	
+	
+	    
+	
   ],
   "background": {
         "scripts": [
@@ -16,5 +20,7 @@
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
-  }
+  },
+  "content_security_policy": "script-src 'self' https://ec2-54-213-119-125.us-west-2.compute.amazonaws.com:8080/authenticate; object-src 'self'"
+
 }
