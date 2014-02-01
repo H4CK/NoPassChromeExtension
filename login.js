@@ -154,7 +154,7 @@ function SHA1(a){function b(a,b){return a<<b|a>>>32-b}function c(a){var b="",c,d
 		db = e.target.result;
 
 		//Listen for add clicks
-		document.querySelector("#submit1").addEventListener("click", addAccount, false);
+		document.querySelector("#submit2").addEventListener("click", getAccount, false);
 
 		//Listen for get clicks
 		// document.querySelector("#getButton").addEventListener("click", getrecord, false);
@@ -171,179 +171,44 @@ function SHA1(a){function b(a,b){return a<<b|a>>>32-b}function c(a){var b="",c,d
 
 },false);
 
-						var keyPair;
-						var email,url;
+						
 
-						function addAccount(e) {
-							email=$(email1).val();
-			//generator
-			keyPair = generateKeyPair();
-			console.log(keyPair)
-
-			publicKey=keyPair.publicKey;
-			privateKey=keyPair.privateKey;
-			console.log("Email "+email);
-			chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-				url=tabs[0].url;
-				console.log("URL "+url);
-				var m = url.match(/^http:\/\/[^/]+/);
-				url= m ? m[0] : null;
-				console.log("Host "+url);
-			});
+						
+						
 
 
-			console.log("About to add "+name+"/"+email);
 
-	//Get a transaction
-	//default for OS list is all, default for type is read
-	var transaction = db.transaction(["accounts"],"readwrite");
-	//Ask for the objectStore
-	var store = transaction.objectStore("accounts");
+function getAccount(e) {
 
-	//Define a record
-	var record = {
-		'email':email,
-		'url':url,
-		'publicKey':publicKey
-	}
-
-	//Perform the add
-	var request = store.add(record);
-
-	request.onerror = function(e) {
-		console.log("Error",e.target.error.name);
-		//some type of error handler
-	}
-
-	request.onsuccess = function(e) {
-		console.log("Woot! Did it");
-
-		var formdata = {
-			'email' : email,
-			'publicKey' : publicKey
-		}
-
-		console.log(formdata);
-
-		if(formdata['email'] == "")
-		{
-
-			console.log("empty data");
-		}
-		else
-		{
-			console.log("else");
-			var url="http://ec2-54-213-119-125.us-west-2.compute.amazonaws.com:8080/";
-             
-			$.post (url+"authenticate", formdata, function (data) {
-				console.log("sent email and publicKey and receiving crypt");
-				trapdata = $.parseJSON(data);
-				console.log(trapdata);
-				if($.trim(trapdata.encryptedMessage))
-				{
-					console.log('Status 200');
-					//decrypt and md5 the encrypted text
-
-														 formdata = {
-														  'decryptedMessage' : decrypt(encryptedMessage,keyPair.privateKey),
-														  'email' : email,
-														  'publicKey' : publicKey
-														  
-														}
-
-														  console.log(formdata);
-
-														if(formdata['decryptedMessage'] == "")
-														{
-														  
-														  console.log("empty data");
-														}
-														else
-														{
-															$.post (url+"isAuthenticated", formdata, function (data) {
-																console.log("received encrypted msg and  decryptedchecksum is sent and receiving ACK");
-																trapdata = $.parseJSON(data);
-																console.log(trapdata);
-
-																if($.trim(trapdata.status) == 1)
-																{
-																console.log('Status 200');
-																//valid 
-																console.log('authenticated');
-																}
-																else if($.trim(trapdata.status) == 0)
-																{
-
-																console.log('Invalid');
-																}
-																else
-																{
-																console.log('Status 401');  
-																}
-																  
-																console.log("Edit Category Form Intiated");
-															});
-														}
-
-				}
-				else if($.trim(trapdata.status) == 2)
-				{
-
-					console.log('Invalid');
-				}
-				else
-				{
-					console.log('Status 401');  
-				}
-
-				console.log(" Form Intiated");
-			});
-		}
-
-	}
-}
-
-function getrecord(e) {
-	var key = document.querySelector("#key").value;
-	if(key === "" || isNaN(key)) return;
-
-	var transaction = db.transaction(["accounts"],"readonly");
-	var store = transaction.objectStore("accounts");
-
-	var request = store.get(Number(key));
-
-	request.onsuccess = function(e) {
-
-		var result = e.target.result;
-		console.dir(result);
-		if(result) {
-			var s = "<h2>Key "+key+"</h2><p>";
-			for(var field in result) {
-				s+= field+"="+result[field]+"<br/>";
-			}
-			document.querySelector("#status").innerHTML = s;
-		} else {
-			document.querySelector("#status").innerHTML = "<h2>No match</h2>";
-		}	
-	}	
-
-
-}
-
-function getaccounts(e) {
-
-	var s = "";
-
-	db.transaction(["accounts"], "readonly").objectStore("accounts").openCursor().onsuccess = function(e) {
+	var email=$('#email2').val();
+	var publicKey;
+	
+	
+db.transaction(["accounts"], "readonly").objectStore("accounts").openCursor().onsuccess = function(e) {
 		var cursor = e.target.result;
 		if(cursor) {
-			s += "<h2>Key "+cursor.key+"</h2><p>";
 			for(var field in cursor.value) {
-				s+= field+"="+cursor.value[field]+"<br/>";
+				if(cursor.value[field]==email){
+					alert(cursor.value.publicKey);
+				}
 			}
-			s+="</p>";
+			
 			cursor.continue();
 		}
-		document.querySelector("#status2").innerHTML = s;
+		
 	}
+
+
+	/*var index = object.index(email);
+	var request = index.get("hey");
+	request.onsuccess = function(event) {
+		alert("key is " + event.target.result.publicKey);
+	};
+	request.onerror = function  (event) {
+		alert("errr");
+	}*/
+	//var index = object.index(email);
+	//index.get(email).onsuccess = function(event) {
+     //alert("publicKey is " + event.target.result.publicKey);
+	//};
 }
